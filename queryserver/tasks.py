@@ -1,7 +1,11 @@
-from celery import task
-from .models import SearchQuery
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
+from celery import task
+from celery.schedules import crontab
+from celery.schedules import periodic_task
+
+from .models import SearchQuery
+
 
 BASE_URL = "https://www.avito.ru/"
 
@@ -33,3 +37,5 @@ def update_query(queryset):
 @task
 def update_queries_results():
     all_queries = SearchQuery.objects.all()
+    for q in all_queries:
+        update_query(q)
